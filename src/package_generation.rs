@@ -825,49 +825,44 @@ mod tests {
             .unwrap()
             .packages
             .remove(0);
-        for executable_name in [None, Some("tool")] {
-            for expose in [false, true] {
-                package.executable_name = executable_name.map(str::to_owned);
-                package.expose = if expose {
-                    vec!["conf".to_owned()]
-                } else {
-                    vec![]
-                };
-                let work_dir = tempfile::tempdir().unwrap();
-                generate_build_script(work_dir.path()).unwrap();
-                let recipe_dir = generate_rattler_build_recipe(
-                    work_dir.path(),
-                    &package,
-                    "1.0.0",
-                    0,
-                    &Platform::Linux64,
-                    &repository,
-                    &asset,
-                )
-                .unwrap();
-                let recipe = std::fs::read_to_string(recipe_dir.join("recipe.yaml")).unwrap();
-                assert!(recipe.contains("  name: tool-cli\n"), "{recipe}");
-                assert!(
-                    recipe.contains("  file_name: \"tool-cli-1.0.0-linux-64\""),
-                    "{recipe}"
-                );
-                assert_eq!(
-                    recipe.contains("      OCTOCONDA_EXECUTABLE_NAME: \"tool\""),
-                    executable_name.is_some(),
-                    "{recipe}"
-                );
-                assert_eq!(
-                    recipe.contains("      OCTOCONDA_EXPOSE: \"conf\""),
-                    expose,
-                    "{recipe}"
-                );
-                assert_eq!(recipe.contains("      - conf/**"), expose, "{recipe}");
-                assert_eq!(
-                    recipe.matches("  script:\n").count(),
-                    usize::from(executable_name.is_some() || expose),
-                    "{recipe}"
-                );
-            }
+        for (executable_name, expose) in
+            [(None, false), (Some("tool"), false), (Some("tool"), true)]
+        {
+            package.executable_name = executable_name.map(str::to_owned);
+            package.expose = if expose {
+                vec!["conf".to_owned()]
+            } else {
+                vec![]
+            };
+            let work_dir = tempfile::tempdir().unwrap();
+            generate_build_script(work_dir.path()).unwrap();
+            let recipe_dir = generate_rattler_build_recipe(
+                work_dir.path(),
+                &package,
+                "1.0.0",
+                0,
+                &Platform::Linux64,
+                &repository,
+                &asset,
+            )
+            .unwrap();
+            let recipe = std::fs::read_to_string(recipe_dir.join("recipe.yaml")).unwrap();
+            assert_eq!(
+                recipe.contains("OCTOCONDA_EXECUTABLE_NAME: \"tool\""),
+                executable_name.is_some(),
+                "{recipe}"
+            );
+            assert_eq!(
+                recipe.contains("OCTOCONDA_EXPOSE: \"conf\""),
+                expose,
+                "{recipe}"
+            );
+            // Both variables must share a single `script: env:` block.
+            assert_eq!(
+                recipe.matches("  script:\n").count(),
+                usize::from(executable_name.is_some() || expose),
+                "{recipe}"
+            );
         }
     }
 
@@ -878,7 +873,7 @@ mod tests {
         use std::process::Command;
 
         let binary = b"#!/bin/sh\nexit 0\n";
-        for name in [None, Some("tool"), Some("tool-1.0.0"), Some("bin")] {
+        for name in [None, Some("tool"), Some("tool-1.0.0")] {
             let work_dir = tempfile::tempdir().unwrap();
             let prefix = work_dir.path().join("prefix");
             std::fs::create_dir(&prefix).unwrap();

@@ -161,7 +161,7 @@ cd "${PREFIX}/bin" || exit
 
 for f in *; do
     # An explicit bare-binary name must not be shortened as a versioned filename.
-    if [ -n "${OCTOCONDA_EXECUTABLE_NAME:-}" ] && [ "$f" = "$BARE_EXECUTABLE" ]; then
+    if [ "$f" = "$BARE_EXECUTABLE" ]; then
         continue
     fi
     if [[ "$f" == *"-${PKG_VERSION}"* ]]; then

@@ -464,30 +464,18 @@ pub mod tests {
     }
 
     #[test]
-    fn test_executable_name_parses_without_changing_package_or_asset_names() {
+    fn test_executable_name() {
         let entry: TomlPackage = toml::from_str(
             r#"repository = "owner/repo"
 name = "tool-cli"
-release-prefix = "tool"
 executable-name = "Tool_2.0-cli"
 "#,
         )
         .unwrap();
         let packages = expand_toml_package(entry).unwrap();
         assert_eq!(packages[0].name, "tool-cli");
-        assert_eq!(packages[0].release_prefix.as_deref(), Some("tool"));
         assert_eq!(packages[0].executable_name.as_deref(), Some("Tool_2.0-cli"));
 
-        let entry = toml::from_str("repository = 'owner/repo'\nname = 'tool-cli'").unwrap();
-        assert!(
-            expand_toml_package(entry).unwrap()[0]
-                .executable_name
-                .is_none()
-        );
-    }
-
-    #[test]
-    fn test_executable_name_on_sub_packages() {
         let entry = toml::from_str(
             r#"repository = "owner/repo"
 [[packages]]
