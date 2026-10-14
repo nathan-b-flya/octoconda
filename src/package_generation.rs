@@ -770,6 +770,11 @@ source:
   url: "{url}"{digest}
   file_name: "{archive}"
 
+requirements:
+  build:
+    - 7zip
+    - file
+
 build:
   number: {build_number}
   dynamic_linking:
@@ -880,6 +885,12 @@ mod tests {
             assert_eq!(
                 recipe.contains("OCTOCONDA_EXPOSE: \"conf\""),
                 expose,
+                "{recipe}"
+            );
+            // build.sh relies on these tools; they must come from the build
+            // prefix, not the host system.
+            assert!(
+                recipe.contains("requirements:\n  build:\n    - 7zip\n    - file\n"),
                 "{recipe}"
             );
             // Both variables must share a single `script: env:` block.

@@ -133,9 +133,6 @@ jobs:
       - name: Make binary executable
         run: chmod +x octoconda
 
-      - name: Install 7zip-standalone
-        run: sudo apt-get install -y 7zip-standalone && which 7zz
-
       - name: Install rattler-build (binary)
         run: |
           mkdir bin
