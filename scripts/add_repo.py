@@ -226,16 +226,11 @@ def build_recipe(recipe_dir: pathlib.Path, platform: str, output_dir: pathlib.Pa
     if not shutil.which("rattler-build"):
         return "rattler-build is not on PATH (run through `pixi run`)"
     output_dir.mkdir(parents=True, exist_ok=True)
-    # For Windows targets rattler-build's default strict isolation replaces
-    # PATH with the system directories only, which hides the pixi-provided
-    # `7zz` that build.sh needs. Inheriting the host environment keeps the
-    # build identical otherwise.
     cmd = [
         "rattler-build", "build",
         "--recipe", "recipe.yaml",
         f"--target-platform={platform}",
         f"--output-dir={output_dir}",
-        "--env-isolation", "none",
     ]
     try:
         result = subprocess.run(
