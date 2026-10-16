@@ -37,7 +37,6 @@ for recipe in "${RECIPES[@]}"; do
       && rattler-build publish \
           --render-only \
           --with-solve \
-          --channel conda-forge \
           --to "https://prefix.dev/${TARGET_CHANNEL}" \
           --generate-attestation \
           --target-platform="${platform}" 2>&1) \
