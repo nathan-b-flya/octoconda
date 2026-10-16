@@ -35,8 +35,6 @@ for recipe in "${RECIPES[@]}"; do
   echo "******* ${package} [${platform}] (${count}/${RECIPE_COUNT}, ${FAILED_PACKAGES} not OK) ******"
   BUILD_OUTPUT=$(cd "${PACKAGE_DIR}" \
       && rattler-build publish \
-          --render-only \
-          --with-solve \
           --channel conda-forge \
           --to "https://prefix.dev/${TARGET_CHANNEL}" \
           --generate-attestation \
