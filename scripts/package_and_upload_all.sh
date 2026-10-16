@@ -49,7 +49,8 @@ for recipe in "${RECIPES[@]}"; do
   count=$((count + 1))
 
   # Clean up! We do not want to run out of storage
-  rm -rf "${PACKAGE_DIR}" || true
+  # temporarily removed to be able to reuse the recipes when testing locally
+  # rm -rf "${PACKAGE_DIR}" || true
 done
 
 { \
